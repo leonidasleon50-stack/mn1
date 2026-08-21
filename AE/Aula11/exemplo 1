@@ -1,0 +1,80 @@
+import numpy as np
+import math 
+import matplotlib.pyplot as plt 
+
+# valor verdadeiro
+u = 2.71828182846
+
+# critério de parada 
+na = 6 
+Eppara = 0.5 * 10**(2-na)
+
+print("Critério de Parada:", Eppara)
+
+def serieMaclarium(x,n):
+    return (x**n) / math.factorial(n)
+
+# definição de x
+x = 1 
+
+
+soma = 0 
+soma_anterior = 0 # Guarda o valor da iteração anterior para calcular o Epest
+Ept = 100
+Epest = 100       # Inicializando o erro estimado em 100%
+i = 0
+
+#lista para gráfico
+I = []
+SOMA = []
+EPT = []
+EPEST = [] # Nova lista para armazenar o erro estimado
+
+
+while Epest > Eppara: 
+    soma += serieMaclarium(x, i)
+    
+    # Cálculo do erro verdadeiro (Ept)
+    Ept = abs((u - soma)/u) * 100
+    
+    
+    if i == 0:
+        Epest = 100 # Na iteração 0 não temos valor anterior, então assumimos 100%
+    else:
+        Epest = abs((soma - soma_anterior) / soma) * 100
+        
+    print(f"Iteração {i} | Ept: {Ept:.5f}% | Epest: {Epest:.5f}% | Soma: {soma:.6f}")
+
+    # Atualizando as listas
+    I.append(i)
+    SOMA.append(soma)
+    EPT.append(Ept)
+    EPEST.append(Epest)
+    
+    # Atualizamos a soma_anterior PARA A PRÓXIMA iteração
+    soma_anterior = soma
+    i += 1
+
+
+# Gráfico da soma 
+plt.plot(I, SOMA, '-or', label="Estimativa")
+plt.legend()
+plt.grid(True)
+plt.title("Decaimento do Erro na Série de Maclaurin")
+plt.xlabel("Número da Iteração (i)")
+plt.ylabel("Estimativa $(e^1=e)$")
+plt.show()
+
+# Gráfico dos erros
+plt.plot(I, EPT, '-ob', label="$E_{pt} \ (\%)$ - Verdadeiro")
+plt.plot(I, EPEST, '-og', label="$E_{pest} \ (\%)$ - Estimado") # epest
+plt.legend()
+plt.title("Comparação dos Erros")
+plt.xlabel("Número da Iteração (i)")
+plt.ylabel("Erro (%)")
+plt.yscale('log') # DICA: A escala logarítmica é ótima para ver erros caindo a zero!
+plt.grid(True)
+plt.show()
+
+# Imprimindo a lista de iterações
+print("Lista de iterações (I):", I)
